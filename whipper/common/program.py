@@ -25,6 +25,7 @@ Common functionality and class for all programs using whipper.
 import musicbrainzngs
 import re
 import os
+import shutil
 import sys
 import time
 
@@ -55,6 +56,7 @@ class Program:
 
     cuePath = None
     logPath = None
+    tocPath = None
     metadata = None
     outdir = None
     result = None
@@ -100,7 +102,8 @@ class Program:
             sys.stdout.write('Warning: cdrdao older than 1.2.3 has a '
                              'pre-gap length bug.\n'
                              'See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171\n')  # noqa: E501
-        toc = cdrdao.ReadTOCTask(device).table
+        toc, self.tocPath = cdrdao.ReadTOCTask(device)
+        toc = toc.table
         assert toc.hasTOC()
         return toc
 
@@ -126,7 +129,7 @@ class Program:
             logger.debug('getTable: cddbdiscid %s, mbdiscid %s not '
                          'in cache for offset %s, reading table' % (
                              cddbdiscid, mbdiscid, offset))
-            t = cdrdao.ReadTableTask(device)
+            t, self.tocPath = cdrdao.ReadTableTask(device)
             itable = t.table
             tdict[offset] = itable
             ptable.persist(tdict)
@@ -614,3 +617,12 @@ class Program:
         self.logPath = logPath
 
         return logPath
+
+    def writeToc(self, discName):
+        tocPath = '%s.toc' % discName
+        logger.debug('write .toc file to %s', tocPath)
+        shutil.move(self.tocPath, tocPath)
+
+        self.tocPath = tocPath
+
+        return tocPath

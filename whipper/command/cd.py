@@ -470,6 +470,9 @@ Log files will log the path to tracks relative to this directory.
                 continue
             _ripIfNotRipped(i + 1)
 
+        logger.debug('writing toc file for %r', discName)
+        self.program.writeToc(discName)
+
         logger.debug('writing cue file for %r', discName)
         self.program.writeCue(discName)
 

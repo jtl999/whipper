@@ -43,8 +43,7 @@ def read_toc(device, fast_toc=False):
 
     toc = TocFile(tocfile)
     toc.parse()
-    os.unlink(tocfile)
-    return toc
+    return (toc, tocfile)
 
 
 def DetectCdr(device):
