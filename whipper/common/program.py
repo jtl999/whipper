@@ -56,10 +56,10 @@ class Program:
 
     cuePath = None
     logPath = None
-    tocPath = None
     metadata = None
     outdir = None
     result = None
+    tocPath = None
 
     _stdout = None
 
@@ -618,7 +618,8 @@ class Program:
 
         return logPath
 
-    def writeToc(self, discName):
+    def move_tocfile(self, discName):
+        """Move cdrdao's tocfile to the discname path (.toc ending)"""
         tocPath = '%s.toc' % discName
         logger.debug('write .toc file to %s', tocPath)
         shutil.move(self.tocPath, tocPath)
