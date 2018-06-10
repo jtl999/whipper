@@ -45,6 +45,7 @@ def read_toc(device, fast_toc=False, persist_tocfile=False):
     toc.parse()
     if not persist_tocfile:
         os.unlink(tocfile)
+        tocfile = None
     return (toc, tocfile)
 
 
