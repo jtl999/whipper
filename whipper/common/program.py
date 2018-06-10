@@ -102,7 +102,7 @@ class Program:
             sys.stdout.write('Warning: cdrdao older than 1.2.3 has a '
                              'pre-gap length bug.\n'
                              'See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171\n')  # noqa: E501
-        toc, self.tocPath = cdrdao.ReadTOCTask(device)
+        toc, self.tocPath = cdrdao.ReadTOCTask(device, persist_tocfile=True)
         toc = toc.table
         assert toc.hasTOC()
         return toc
@@ -129,7 +129,8 @@ class Program:
             logger.debug('getTable: cddbdiscid %s, mbdiscid %s not '
                          'in cache for offset %s, reading table' % (
                              cddbdiscid, mbdiscid, offset))
-            t, self.tocPath = cdrdao.ReadTableTask(device)
+            t, self.tocPath = cdrdao.ReadTableTask(device,
+                                                   persist_tocfile=True)
             itable = t.table
             tdict[offset] = itable
             ptable.persist(tdict)
@@ -619,11 +620,9 @@ class Program:
         return logPath
 
     def move_tocfile(self, discName):
-        """Move cdrdao's tocfile to the discname path (.toc ending)"""
+        """Move cdrdao's tocfile to the output dir. ('[discName].toc')"""
         tocPath = '%s.toc' % discName
-        logger.debug('write .toc file to %s', tocPath)
+        logger.debug('moving %s .toc file to %s', self.tocPath, tocPath)
         shutil.move(self.tocPath, tocPath)
-
         self.tocPath = tocPath
-
         return tocPath

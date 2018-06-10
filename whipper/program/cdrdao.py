@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 CDRDAO = 'cdrdao'
 
 
-def read_toc(device, fast_toc=False):
+def read_toc(device, fast_toc=False, persist_tocfile=False):
     """
     Return cdrdao-generated table of contents for 'device'.
     """
@@ -43,6 +43,8 @@ def read_toc(device, fast_toc=False):
 
     toc = TocFile(tocfile)
     toc.parse()
+    if not persist_tocfile:
+        os.unlink(tocfile)
     return (toc, tocfile)
 
 
@@ -78,18 +80,18 @@ def version():
     return m.group('version')
 
 
-def ReadTOCTask(device):
+def ReadTOCTask(device, persist_tocfile=False):
     """
     stopgap morituri-insanity compatibility layer
     """
-    return read_toc(device, fast_toc=True)
+    return read_toc(device, fast_toc=True, persist_tocfile=False)
 
 
-def ReadTableTask(device):
+def ReadTableTask(device, persist_tocfile=False):
     """
     stopgap morituri-insanity compatibility layer
     """
-    return read_toc(device)
+    return read_toc(device, persist_tocfile=False)
 
 
 def getCDRDAOVersion():
