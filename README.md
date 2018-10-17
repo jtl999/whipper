@@ -68,42 +68,6 @@ For detailed information, please check the commit history.
 
 Whipper still isn't available as an official package in every Linux distributions so, in order to use it, it may be necessary to [build it from its source code](#building).
 
-### Docker
-
-You can easily install whipper by making use of the included Dockerfile without needing to care about the required dependencies:
-
-`docker build -t whipper/whipper`
-
-It's recommended to create an alias for a convenient usage:
-
-```bash
-alias whipper="docker run -ti --rm --device=/dev/cdrom \
-    -v ~/.config/whipper:/home/worker/.config/whipper \
-    -v ${PWD}/output:/output \
-    whipper/whipper"
-```
-
-You should put this e.g. into your `.bash_aliases`. Also keep in mind to substitute the path definitions to something that fits to your needs (e.g. replace `… -v ${PWD}/output:/output …` with `… -v ${HOME}/ripped:/output \ …`).
-
-Make sure you create the configuration directory:
-
-`mkdir -p ~/.config/whipper ${PWD}/output`
-
-Finally you can test the correct installation:
-
-```
-whipper -v
-whipper drive list
-```
-
-### Package
-
-This is a noncomprehensive summary which shows whipper's packaging status (unofficial repositories are probably not included):
-
-[![Packaging status](https://repology.org/badge/vertical-allrepos/whipper.svg)](https://repology.org/metapackage/whipper)
-
-In case you decide to install whipper using an unofficial repository just keep in mind it is your responsibility to verify that the provided content is safe to use.
-
 ## Building
 
 If you are building from a source tarball or checkout, you can choose to use whipper installed or uninstalled _but first install all the required dependencies_.
@@ -198,6 +162,10 @@ The simplest way to get started making accurate rips is:
 
    `whipper cd rip`
 
+## New options
+
+The option `--verbose-toc` has been added to `whipper cd rip`. It slightly increases the ripping time but shows CRC errors and provides more detail when ripping the disc. The added information is not added to the log file to remain compliant with the original version of whipper.
+
 ## Configuration file documentation
 
 The configuration file is stored in `$XDG_CONFIG_HOME/whipper/whipper.conf`, or `$HOME/.config/whipper/whipper.conf` if `$XDG_CONFIG_HOME` is undefined.
@@ -236,6 +204,9 @@ track_template = new/%%A/%%y - %%d/%%t - %%n	; note: the format char '%' must be
 disc_template = %(track_template)s
 # ...
 ```
+
+## `ripcd` script
+There's a script called `whatcd` in this source distribution. copy it to /usr/local/bin and edit it to change `$DESTDIR` to where you want the rips saved.
 
 ## Running uninstalled
 
