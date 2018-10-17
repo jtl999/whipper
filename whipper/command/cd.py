@@ -90,13 +90,16 @@ class _CD(BaseCommand):
         # if the device is mounted (data session), unmount it
         self.device = self.options.device
         sys.stdout.write('Checking device %s\n' % self.device)
-
         utils.load_device(self.device)
         utils.unmount_device(self.device)
 
         # first, read the normal TOC, which is fast
         print("Reading TOC...")
-        self.ittoc = self.program.getFastToc(self.runner, self.device)
+
+        if self.options.verbose_toc:
+            self.ittoc = self.program.getFastToc(self.runner, self.device, True)
+        else:
+            self.ittoc = self.program.getFastToc(self.runner, self.device)
 
         # already show us some info based on this
         self.program.getRipResult(self.ittoc.getCDDBDiscId())
@@ -250,6 +253,10 @@ Log files will log the path to tracks relative to this directory.
                                  "if the patched cdparanoia package is "
                                  "installed and the drive "
                                  "supports this feature. ")
+        self.parser.add_argument('--verbose-toc',
+                                 action="store_true", dest="verbose_toc",
+                                 default=False,
+                                 help="Displays information about the extracted TOC from the disc and any sub-channel CRC errors")
         self.parser.add_argument('-O', '--output-directory',
                                  action="store", dest="output_directory",
                                  default=os.path.relpath(os.getcwd()),

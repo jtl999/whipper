@@ -44,6 +44,8 @@ def read_toc(device, fast_toc=False):
     toc = TocFile(tocfile)
     toc.parse()
     os.unlink(tocfile)
+    if (fast_toc is False):
+        print(stderr)
     return toc
 
 
@@ -79,11 +81,14 @@ def version():
     return m.group('version')
 
 
-def ReadTOCTask(device):
+def ReadTOCTask(device, verbose=False):
     """
     stopgap morituri-insanity compatibility layer
     """
-    return read_toc(device, fast_toc=True)
+    if verbose:
+        return read_toc(device, fast_toc=False)
+    else:
+        return read_toc(device, fast_toc=True)
 
 
 def ReadTableTask(device):

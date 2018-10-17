@@ -90,7 +90,7 @@ class Program:
             logger.info('Changing to working directory %s' % workingDirectory)
             os.chdir(workingDirectory)
 
-    def getFastToc(self, runner, device):
+    def getFastToc(self, runner, device, verbose=False):
         """Retrieve the normal TOC table from the drive.
         Also warn about buggy cdrdao versions.
         """
@@ -100,7 +100,10 @@ class Program:
             sys.stdout.write('Warning: cdrdao older than 1.2.3 has a '
                              'pre-gap length bug.\n'
                              'See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171\n')  # noqa: E501
-        toc = cdrdao.ReadTOCTask(device).table
+        if verbose:
+            toc = cdrdao.ReadTOCTask(device, True).table
+        else:
+            toc = cdrao.ReadTOCTask(device).table
         assert toc.hasTOC()
         return toc
 
