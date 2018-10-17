@@ -206,7 +206,7 @@ disc_template = %(track_template)s
 ```
 
 ## `ripcd` script
-There's a script called `whatcd` in this source distribution. copy it to /usr/local/bin and edit it to change `$DESTDIR` to where you want the rips saved.
+There's a script called `ripcd` in this source distribution. copy it to /usr/local/bin and edit it to change `$DESTDIR` to where you want the rips saved.
 
 ## Running uninstalled
 
