@@ -103,7 +103,7 @@ class Program:
         if verbose:
             toc = cdrdao.ReadTOCTask(device, True).table
         else:
-            toc = cdrao.ReadTOCTask(device).table
+            toc = cdrdao.ReadTOCTask(device).table
         assert toc.hasTOC()
         return toc
 
