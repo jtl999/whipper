@@ -20,12 +20,22 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
-# 
-# Change DESTDIR to where you want the rips saved!
 DESTDIR="/data/cdrips"
 TMPDIR=`mktemp -d "$DESTDIR/.tmp/rip-disc.XXX'"`
 RELEASE_ID=''
 DRIVE='/dev/sr0'
+
+if [ -z "$DESTDIR" ]
+then
+    echo "$DESTDIR is not set!"
+    exit 1
+fi
+
+if ! [ -x "$(command -v rsync)" ]
+then 
+    echo "rsync is not installed!"; 
+    exit
+fi
 
 while getopts 't:d:r:c:' OPT; do
   case $OPT in
@@ -57,7 +67,6 @@ while getopts 't:d:r:c:' OPT; do
   esac
 done
 
-# artist/album/track number - name.flac
 TRACK_TEMPLATE='%A/%d/%t - %n'
 DISC_TEMPLATE='%A/%d/%d'
 
@@ -67,7 +76,11 @@ _ripcmd="whipper -R cd --device='$DRIVE' rip --cdr  \
 --release-id='$RELEASE_ID'"
 
 echo "Ripping to: $TMPDIR"
+
 eject --trayclose "$DRIVE"
+#echo '... Extracting TOC.'
+#TOCFILE=$(mktemp --dry-run --suffix .toc)
+#cdrdao read-toc --device "$DRIVE" "$TOCFILE"
 
 echo '... Ripping the CD.'
 echo "    Using: $_ripcmd"
