@@ -175,10 +175,6 @@ The simplest way to get started making accurate rips is:
 
    `whipper cd rip`
 
-## New options
-
-The option `--verbose-toc` has been added to `whipper cd rip`. It slightly increases the ripping time but shows CRC errors and provides more detail when ripping the disc. The added information is not added to the log file to remain compliant with the original version of whipper.
-
 ## Configuration file documentation
 
 The configuration file is stored in `$XDG_CONFIG_HOME/whipper/whipper.conf`, or `$HOME/.config/whipper/whipper.conf` if `$XDG_CONFIG_HOME` is undefined.
