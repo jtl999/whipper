@@ -1,12 +1,12 @@
 # Whipper
 
-[![license](https://img.shields.io/github/license/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/blob/master/LICENSE)
-[![Build Status](https://travis-ci.com/JoeLametta/whipper.svg?branch=master)](https://travis-ci.com/JoeLametta/whipper)
-[![GitHub (pre-)release](https://img.shields.io/github/release/joelametta/whipper/all.svg)](https://github.com/JoeLametta/whipper/releases/latest)
+[![license](https://img.shields.io/github/license/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/blob/master/LICENSE)
+[![Build Status](https://travis-ci.com/whipper-team/whipper.svg?branch=master)](https://travis-ci.com/whipper-team/whipper)
+[![GitHub (pre-)release](https://img.shields.io/github/release/whipper-team/whipper/all.svg)](https://github.com/whipper-team/whipper/releases/latest)
 [![IRC](https://img.shields.io/badge/irc-%23whipper%40freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=%23whipper)
-[![GitHub Stars](https://img.shields.io/github/stars/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/stargazers)
-[![GitHub Issues](https://img.shields.io/github/issues/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/issues)
-[![GitHub contributors](https://img.shields.io/github/contributors/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/graphs/contributors)
+[![GitHub Stars](https://img.shields.io/github/stars/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/stargazers)
+[![GitHub Issues](https://img.shields.io/github/issues/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/issues)
+[![GitHub contributors](https://img.shields.io/github/contributors/whipper-team/whipper.svg)](https://github.com/whipper-team/whipper/graphs/contributors)
 
 Whipper is a Python 2.7 CD-DA ripper based on the [morituri project](https://github.com/thomasvs/morituri) (_CDDA ripper for *nix systems aiming for accuracy over speed_). It enhances morituri which development seems to have halted merging old ignored pull requests, improving it with bugfixes and new features.
 
@@ -60,7 +60,7 @@ https://web.archive.org/web/20160528213242/https://thomas.apestaart.org/thomas/t
 
 ## Changelog
 
-See [CHANGELOG.md](https://github.com/JoeLametta/whipper/blob/master/CHANGELOG.md).
+See [CHANGELOG.md](https://github.com/whipper-team/whipper/blob/master/CHANGELOG.md).
 
 For detailed information, please check the commit history.
 
@@ -91,12 +91,25 @@ Whipper relies on the following packages in order to run correctly and provide a
 - [flac](https://xiph.org/flac/), for reading flac files
 - [sox](http://sox.sourceforge.net/), for track peak detection
 
+Some dependencies aren't available in the PyPI. They can be probably installed using your distribution's package manager:
+
+- [cd-paranoia](https://www.gnu.org/software/libcdio/)
+- [cdrdao](http://cdrdao.sourceforge.net/)
+- [GObject Introspection](https://wiki.gnome.org/Projects/GObjectIntrospection)
+- [libsndfile](http://www.mega-nerd.com/libsndfile/)
+- [flac](https://xiph.org/flac/)
+- [sox](http://sox.sourceforge.net/)
+
+PyPI installable dependencies are listed in the [requirements.txt](https://github.com/whipper-team/whipper/blob/master/requirements.txt) file and can be installed issuing the following command:
+
+`pip install -r requirements.txt`
+
 ### Fetching the source code
 
 Change to a directory where you want to put whipper source code (for example, `$HOME/dev/ext` or `$HOME/prefix/src`)
 
 ```bash
-git clone https://github.com/JoeLametta/whipper.git
+git clone https://github.com/whipper-team/whipper.git
 cd whipper
 ```
 
@@ -229,10 +242,9 @@ whipper cd rip -L what
 
 ### Official logger plugins
 
-Unfortunately both logger plugins are currently outdated and won't work with latest whipper versions.
+I suggest using whipper's default logger unless you've got particular requirements.
 
-- [morituri-eaclogger](https://github.com/JoeLametta/morituri-eaclogger) - eac-like logger attempting to maintain strict compatiility with EAC
-- [morituri-whatlogger](https://github.com/RecursiveForest/morituri-whatlogger) - eac-like logger containing the informational enhancements of the yamllogger, originally designed for use on What.CD
+- [whipper-plugin-eaclogger](https://github.com/whipper-team/whipper-plugin-eaclogger) - a plugin for whipper which provides EAC style log reports
 
 ## License
 
@@ -261,13 +273,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 ## Contributing
 
 Make sure you have the latest copy from our [git
-repository](https://github.com/JoeLametta/whipper). Where possible,
+repository](https://github.com/whipper-team/whipper). Where possible,
 please include tests for new or changed functionality. You can run tests
 with `python -m unittest discover` from your source checkout.
 
 ### Bug reports & feature requests
 
-Please use the [issue tracker](https://github.com/JoeLametta/whipper/issues) to report any bugs or to file feature requests.
+Please use the [issue tracker](https://github.com/whipper-team/whipper/issues) to report any bugs or to file feature requests.
 
 When filing bug reports, please run the failing command with the environment variable `WHIPPER_DEBUG` set. For example:
 
@@ -289,12 +301,18 @@ Thanks to:
 - [Merlijn Wajer](https://github.com/MerlijnWajer)
 - [Samantha Baldwin](https://github.com/RecursiveForest)
 
-And to all the [![GitHub contributors](https://img.shields.io/github/contributors/JoeLametta/whipper.svg)](https://github.com/JoeLametta/whipper/graphs/contributors).
+And to all the [contributors](https://github.com/whipper-team/whipper/graphs/contributors).
 
 ## Links
 
-You can find us and talk about the project on IRC: [freenode](https://webchat.freenode.net/?channels=%23whipper), **#whipper** channel.
+You can find us and talk about the project on:
 
+- IRC: [freenode](https://webchat.freenode.net/?channels=%23whipper), **#whipper** channel
+- Matrix (the room is a bridge to freenode IRC)
+  - Access Matrix  through the [Riot.im web client](https://riot.im/app/#/room/!wxdgcGzudITUpZMCrn:matrix.org)
+  - Join to the room named `#freenode_#whipper:matrix.org`
 - [Redacted thread (official)](https://redacted.ch/forums.php?action=viewthread&threadid=150)
+
+Other relevant links:
 - [Repology: versions for whipper](https://repology.org/metapackage/whipper/versions)
 - [Unattended ripping using whipper (by Thomas McWork)](https://github.com/thomas-mc-work/most-possible-unattended-rip)
