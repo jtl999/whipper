@@ -1,6 +1,6 @@
 TODO:
 
-Please see https://github.com/JoeLametta/whipper/milestones for further
+Please see https://github.com/whipper-team/whipper/milestones for further
 TODO items; this file exists only to have contents individually removed
 eventually, not to be continually updated.
 
@@ -43,8 +43,6 @@ MEDIUM
 - rip task should abort on task 4 if checksums don't match
 
 - retry cdrdao a few times when it had to load the tray
-
-- getting cache results should depend on same drive/offset
 
 - do some character mangling so trail of dead is not in a hidden dir
 

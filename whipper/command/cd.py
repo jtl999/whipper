@@ -28,6 +28,7 @@ from whipper.command.basecommand import BaseCommand
 from whipper.common import (
     accurip, config, drive, program, task
 )
+from whipper.common.common import validate_template
 from whipper.program import cdrdao, cdparanoia, utils
 from whipper.result import result
 
@@ -137,11 +138,21 @@ class _CD(BaseCommand):
                             "--cdr not passed")
             return -1
 
+        # Change working directory before cdrdao's task
+        if self.options.working_directory is not None:
+            os.chdir(os.path.expanduser(self.options.working_directory))
+        out_bpath = self.options.output_directory.decode('utf-8')
+        # Needed to preserve cdrdao's tocfile
+        out_fpath = self.program.getPath(out_bpath,
+                                         self.options.disc_template,
+                                         self.mbdiscid,
+                                         self.program.metadata)
         # now, read the complete index table, which is slower
         self.itable = self.program.getTable(self.runner,
                                             self.ittoc.getCDDBDiscId(),
                                             self.ittoc.getMusicBrainzDiscId(),
-                                            self.device, self.options.offset)
+                                            self.device, self.options.offset,
+                                            out_fpath)
 
         assert self.itable.getCDDBDiscId() == self.ittoc.getCDDBDiscId(), \
             "full table's id %s differs from toc id %s" % (
@@ -292,7 +303,9 @@ Log files will log the path to tracks relative to this directory.
 
         self.options.track_template = self.options.track_template.decode(
             'utf-8')
+        validate_template(self.options.track_template, 'track')
         self.options.disc_template = self.options.disc_template.decode('utf-8')
+        validate_template(self.options.disc_template, 'disc')
 
         if self.options.offset is None:
             raise ValueError("Drive offset is unconfigured.\n"
@@ -333,9 +346,6 @@ Log files will log the path to tracks relative to this directory.
                        dirname.encode('utf-8'))
                 logger.critical(msg)
                 raise RuntimeError(msg)
-            else:
-                sys.stdout.write("output directory %s already exists\n" %
-                                 dirname.encode('utf-8'))
         else:
             print("creating output directory %s" % dirname.encode('utf-8'))
             os.makedirs(dirname)
@@ -406,7 +416,7 @@ Log files will log the path to tracks relative to this directory.
                                               offset=int(self.options.offset),
                                               device=self.device,
                                               taglist=self.program.getTagList(
-                                                  number),
+                                                  number, self.mbdiscid),
                                               overread=self.options.overread,
                                               what='track %d of %d%s' % (
                                                   number,

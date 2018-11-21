@@ -28,11 +28,12 @@ import os
 import sys
 import time
 
-from whipper.common import accurip, cache, checksum, common, mbngs, path
+from whipper.common import accurip, checksum, common, mbngs, path
 from whipper.program import cdrdao, cdparanoia
 from whipper.image import image
 from whipper.extern import freedb
 from whipper.extern.task import task
+from whipper.result import result
 
 import logging
 logger = logging.getLogger(__name__)
@@ -66,7 +67,6 @@ class Program:
         @param record: whether to record results of API calls for playback.
         """
         self._record = record
-        self._cache = cache.ResultCache()
         self._stdout = stdout
         self._config = config
 
@@ -107,37 +107,20 @@ class Program:
         assert toc.hasTOC()
         return toc
 
-    def getTable(self, runner, cddbdiscid, mbdiscid, device, offset):
+    def getTable(self, runner, cddbdiscid, mbdiscid, device, offset,
+                 out_path):
         """
-        Retrieve the Table either from the cache or the drive.
+        Retrieve the Table from the drive.
 
         @rtype: L{table.Table}
         """
-        tcache = cache.TableCache()
-        ptable = tcache.get(cddbdiscid, mbdiscid)
         itable = None
         tdict = {}
 
-        # Ignore old cache, since we do not know what offset it used.
-        if isinstance(ptable.object, dict):
-            tdict = ptable.object
-
-            if offset in tdict:
-                itable = tdict[offset]
-
-        if not itable:
-            logger.debug('getTable: cddbdiscid %s, mbdiscid %s not '
-                         'in cache for offset %s, reading table' % (
-                             cddbdiscid, mbdiscid, offset))
-            t = cdrdao.ReadTableTask(device)
-            itable = t.table
-            tdict[offset] = itable
-            ptable.persist(tdict)
-            logger.debug('getTable: read table %r' % itable)
-        else:
-            logger.debug('getTable: cddbdiscid %s, mbdiscid %s in cache '
-                         'for offset %s' % (cddbdiscid, mbdiscid, offset))
-            logger.debug('getTable: loaded table %r' % itable)
+        t = cdrdao.ReadTableTask(device, out_path)
+        itable = t.table
+        tdict[offset] = itable
+        logger.debug('getTable: read table %r' % itable)
 
         assert itable.hasTOC()
 
@@ -149,20 +132,14 @@ class Program:
 
     def getRipResult(self, cddbdiscid):
         """
-        Retrieve the persistable RipResult either from our cache (from a
-        previous, possibly aborted rip), or return a new one.
+        Return a RipResult object.
 
         @rtype: L{result.RipResult}
         """
         assert self.result is None
-
-        self._presult = self._cache.getRipResult(cddbdiscid)
-        self.result = self._presult.object
+        self.result = result.RipResult()
 
         return self.result
-
-    def saveRipResult(self):
-        self._presult.persist()
 
     def addDisambiguation(self, template_part, metadata):
         "Add disambiguation to template path part string."
@@ -400,7 +377,7 @@ class Program:
         self._stdout.write('\n')
         return ret
 
-    def getTagList(self, number):
+    def getTagList(self, number, mbdiscid):
         """
         Based on the metadata, get a dict of tags for the given track.
 
@@ -420,7 +397,6 @@ class Program:
             disc = self.metadata.title
             mbidAlbum = self.metadata.mbid
             mbidTrackAlbum = self.metadata.mbidArtist
-            mbDiscId = self.metadata.discid
 
             if number > 0:
                 try:
@@ -437,6 +413,9 @@ class Program:
                 title = 'Hidden Track One Audio'
 
         tags = {}
+
+        if number > 0:
+            tags['MUSICBRAINZ_DISCID'] = mbdiscid
 
         if self.metadata and not self.metadata.various:
             tags['ALBUMARTIST'] = albumArtist
@@ -455,7 +434,6 @@ class Program:
                 tags['MUSICBRAINZ_ARTISTID'] = mbidTrackArtist
                 tags['MUSICBRAINZ_ALBUMID'] = mbidAlbum
                 tags['MUSICBRAINZ_ALBUMARTISTID'] = mbidTrackAlbum
-                tags['MUSICBRAINZ_DISCID'] = mbDiscId
 
         # TODO/FIXME: ISRC tag
 
