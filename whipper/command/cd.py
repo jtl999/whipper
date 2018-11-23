@@ -95,6 +95,12 @@ class _CD(BaseCommand):
         utils.load_device(self.device)
         utils.unmount_device(self.device)
 
+
+        # Change working directory before cdrdao's task
+        if (getattr(self.options, 'relative_path', False)):
+            self.options.working_directory = self.options.output_directory.decode('utf-8')
+            self.options.output_directory = None
+
         # first, read the normal TOC, which is fast
         print("Reading TOC...")
         self.ittoc = self.program.getFastToc(self.runner, self.device)
@@ -134,10 +140,6 @@ class _CD(BaseCommand):
             logger.critical("inserted disc seems to be a CD-R, "
                             "--cdr not passed")
             return -1
-
-        # Change working directory before cdrdao's task
-        if (getattr(self.options, 'relative_path', False)):
-            self.options.working_directory = self.options.output_directory.decode('utf-8')
 
         if self.options.working_directory is not None:
             os.chdir(os.path.expanduser(self.options.working_directory))
