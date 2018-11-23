@@ -261,6 +261,10 @@ Log files will log the path to tracks relative to this directory.
                                  "if the patched cdparanoia package is "
                                  "installed and the drive "
                                  "supports this feature. ")
+        self.parser.add_argument('-r', '--relative-path',
+                                 action="store_true", dest="relative_path",
+                                 default=False,
+                                 help="Only use relative paths in the log file (for privacy)")
         self.parser.add_argument('-O', '--output-directory',
                                  action="store", dest="output_directory",
                                  default=os.path.relpath(os.getcwd()),
