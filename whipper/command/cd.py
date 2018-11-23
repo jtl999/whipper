@@ -136,6 +136,9 @@ class _CD(BaseCommand):
             return -1
 
         # Change working directory before cdrdao's task
+        if (getattr(self.options, 'relative_path', False)):
+            self.options.working_directory = self.options.output_directory.decode('utf-8')
+
         if self.options.working_directory is not None:
             os.chdir(os.path.expanduser(self.options.working_directory))
         out_bpath = self.options.output_directory.decode('utf-8')
