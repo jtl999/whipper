@@ -94,6 +94,12 @@ class _CD(BaseCommand):
         utils.load_device(self.device)
         utils.unmount_device(self.device)
 
+
+        # Change working directory before cdrdao's task
+        if (getattr(self.options, 'relative_path', False)):
+            self.options.working_directory = self.options.output_directory.decode('utf-8')
+            self.options.output_directory = ''
+
         # first, read the normal TOC, which is fast
         print("Reading TOC...")
 
@@ -138,7 +144,6 @@ class _CD(BaseCommand):
                             "--cdr not passed")
             return -1
 
-        # Change working directory before cdrdao's task
         if self.options.working_directory is not None:
             os.chdir(os.path.expanduser(self.options.working_directory))
         out_bpath = self.options.output_directory.decode('utf-8')
@@ -264,10 +269,10 @@ Log files will log the path to tracks relative to this directory.
                                  "if the patched cdparanoia package is "
                                  "installed and the drive "
                                  "supports this feature. ")
-        self.parser.add_argument('--verbose-toc',
-                                 action="store_true", dest="verbose_toc",
+        self.parser.add_argument('-r', '--relative-path',
+                                 action="store_true", dest="relative_path",
                                  default=False,
-                                 help="Displays information about the extracted TOC from the disc and any sub-channel CRC errors")
+                                 help="Only use relative paths in the log file (for privacy)")
         self.parser.add_argument('-O', '--output-directory',
                                  action="store", dest="output_directory",
                                  default=os.path.relpath(os.getcwd()),
@@ -468,8 +473,6 @@ Log files will log the path to tracks relative to this directory.
                 self.itable.setFile(number, 1, trackResult.filename,
                                     self.ittoc.getTrackLength(number), number)
 
-            self.program.saveRipResult()
-
         # check for hidden track one audio
         htoa = self.program.getHTOA()
         if htoa:
@@ -499,8 +502,6 @@ Log files will log the path to tracks relative to this directory.
             print('AccurateRip entry not found')
 
         accurip.print_report(self.program.result)
-
-        self.program.saveRipResult()
 
         self.program.writeLog(discName, self.logger)
 
