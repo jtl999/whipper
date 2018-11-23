@@ -99,7 +99,7 @@ class _CD(BaseCommand):
         # Change working directory before cdrdao's task
         if (getattr(self.options, 'relative_path', False)):
             self.options.working_directory = self.options.output_directory.decode('utf-8')
-            self.options.output_directory = None
+            self.options.output_directory = ''
 
         # first, read the normal TOC, which is fast
         print("Reading TOC...")
