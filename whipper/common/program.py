@@ -100,12 +100,17 @@ class Program:
             sys.stdout.write('Warning: cdrdao older than 1.2.3 has a '
                              'pre-gap length bug.\n'
                              'See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171\n')  # noqa: E501
-        toc = cdrdao.ReadTOCTask(device).table
+
+
+        t = cdrdao.ReadTOC_Task(device)
+        runner.run(t)
+        toc = t.toc.table
+
         assert toc.hasTOC()
         return toc
 
     def getTable(self, runner, cddbdiscid, mbdiscid, device, offset,
-                 out_path):
+                 toc_path):
         """
         Retrieve the Table either from the cache or the drive.
 
@@ -115,27 +120,14 @@ class Program:
         ptable = tcache.get(cddbdiscid, mbdiscid)
         itable = None
         tdict = {}
-
-        # Ignore old cache, since we do not know what offset it used.
-        if isinstance(ptable.object, dict):
-            tdict = ptable.object
-
-            if offset in tdict:
-                itable = tdict[offset]
-
-        if not itable:
-            logger.debug('getTable: cddbdiscid %s, mbdiscid %s not '
-                         'in cache for offset %s, reading table' % (
-                             cddbdiscid, mbdiscid, offset))
-            t = cdrdao.ReadTableTask(device, out_path)
-            itable = t.table
-            tdict[offset] = itable
-            ptable.persist(tdict)
-            logger.debug('getTable: read table %r' % itable)
-        else:
-            logger.debug('getTable: cddbdiscid %s, mbdiscid %s in cache '
-                         'for offset %s' % (cddbdiscid, mbdiscid, offset))
-            logger.debug('getTable: loaded table %r' % itable)
+        
+        t = cdrdao.ReadTOC_Task(device)
+        t.description = "Reading table"
+        t.toc_path = toc_path
+        runner.run(t)
+        itable = t.toc.table
+        tdict[offset] = itable
+        logger.debug('getTable: read table %r' % itable)
 
         assert itable.hasTOC()
 

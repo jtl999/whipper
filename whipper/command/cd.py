@@ -96,7 +96,6 @@ class _CD(BaseCommand):
         utils.unmount_device(self.device)
 
         # first, read the normal TOC, which is fast
-        print("Reading TOC...")
         self.ittoc = self.program.getFastToc(self.runner, self.device)
 
         # already show us some info based on this
