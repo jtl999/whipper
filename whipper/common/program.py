@@ -100,6 +100,9 @@ class Program:
             sys.stdout.write('Warning: cdrdao older than 1.2.3 has a '
                              'pre-gap length bug.\n'
                              'See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171\n')  # noqa: E501
+            t = cdrdao.ReadTOC_Task(device)
+            runner.run(t)
+
         if verbose:
             toc = cdrdao.ReadTOCTask(device, True).table
         else:
