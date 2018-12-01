@@ -103,10 +103,10 @@ class _CD(BaseCommand):
         # first, read the normal TOC, which is fast
         print("Reading TOC...")
 
-        if self.options.verbose_toc:
-            self.ittoc = self.program.getFastToc(self.runner, self.device, True)
-        else:
-            self.ittoc = self.program.getFastToc(self.runner, self.device)
+        t2 = cdrdao.ReadTOC_Task(self.device)
+        self.runner.run(t2)
+
+        self.ittoc = self.program.getFastToc(self.runner, self.device)
 
         # already show us some info based on this
         self.program.getRipResult(self.ittoc.getCDDBDiscId())

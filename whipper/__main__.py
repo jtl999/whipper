@@ -3,7 +3,7 @@
 
 import os
 import sys
-
+import pudb; pu.db
 from whipper.command.main import main
 
 
