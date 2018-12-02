@@ -1,0 +1,5 @@
+Found 56 Q sub-channels with CRC errors.
+Found (?P<errors>[0-9][0-9]) Q sub-channels with CRC errors
+
+Analyzing track 01 (AUDIO): start 00:00:00, length 04:03:30...
+^Analyzing track (?P<track>[0-9]*) \(AUDIO\): start (?P<start>[0-9]*:[0-9]*:[0-9]*), length (?P<end>[0-9]*:[0-9]*:[0-9]*)
