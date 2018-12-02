@@ -4,6 +4,7 @@ import re
 import shutil
 import tempfile
 import subprocess
+import time
 from subprocess import Popen, PIPE
 
 from whipper.common.common import EjectError, truncate_filename
@@ -34,7 +35,8 @@ class ReadTOC_Task(task.Task):
         
         self.device = device
         self.fast_toc = fast_toc
-        
+        self._buffer = ""  # accumulate characters
+
     def start(self, runner):
         task.Task.start(self, runner)
         ## TODO: Remove these hardcoded values (for testing)
@@ -48,44 +50,47 @@ class ReadTOC_Task(task.Task):
         cmd = [CDRDAO, 'read-toc'] + (['--fast-toc'] if fast_toc else []) + [
             '--device', device, tocfile]
         
-        sys.stdout.write("foo\n")
         self._popen = asyncsub.Popen(cmd,
                                      bufsize=1024,
                                      stdin=subprocess.PIPE,
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE,
                                      close_fds=True)
-        def _read(self, runner):
-            sys.stdout.write("bar\n")
-            ret = self._popen.recv_err()
-            if not ret:
-                if self._popen.poll() is not None:
-                    self._done()
-                    return
-                self.schedule(0.01, self._read, runner)
-                return
-            self._buffer += ret
-            
-            # parse buffer into lines if possible, and parse them
-            if "\n" in self._buffer:
-                 lines = self._buffer.split('\n')
-                 if lines[-1] != "\n":
-                    # last line didn't end yet
-                    self._buffer = lines[-1]
-                    del lines[-1]
-                 else:
-                    self._buffer = ""
 
-                 progress = float(num) / float(den)
-                 if progress < 1.0:
-                     self.setProgress(progress)
-            
-            # 0 does not give us output before we complete, 1.0 gives us output
-            # too late
+        self._start_time = time.time()
+        self.schedule(1.0, self._read, runner)
+        
+    def _read(self, runner):
+        ret = self._popen.recv_err()
+        if not ret:
+            if self._popen.poll() is not None:
+                self._done()
+                return
             self.schedule(0.01, self._read, runner)
+            return
+        self._buffer += ret
+            
+        # parse buffer into lines if possible, and parse them
+        if "\n" in self._buffer:
+
+            lines = self._buffer.split('\n')
+            if lines[-1] != "\n":
+                # last line didn't end yet
+                self._buffer = lines[-1]
+                del lines[-1]
+            else:
+                self._buffer = ""
+            for line in lines:
+                sys.stdout.write("%s\n" % line)
+
+        # 0 does not give us output before we complete, 1.0 gives us output
+        # too late
+        self.schedule(0.01, self._read, runner)
 
 
     def _poll(self, runner):
+
+        sys.stdout.write("_poll\n")
         if self._popen.poll() is None:
             self.schedule(1.0, self._poll, runner)
             return
@@ -99,6 +104,24 @@ class ReadTOC_Task(task.Task):
 
         self.stop()
         return
+
+def version():
+    """
+    Return cdrdao version as a string.
+    """
+    cdrdao = Popen(CDRDAO, stderr=PIPE)
+    out, err = cdrdao.communicate()
+    if cdrdao.returncode != 1:
+        logger.warning("cdrdao version detection failed: "
+                       "return code is " + str(cdrdao.returncode))
+        return None
+    m = re.compile(r'^Cdrdao version (?P<version>.*) - \(C\)').search(
+        err.decode('utf-8'))
+    if not m:
+        logger.warning("cdrdao version detection failed: "
+                       "could not find version")
+        return None
+    return m.group('version')
 
 def getCDRDAOVersion():
     """
