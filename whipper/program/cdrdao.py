@@ -17,6 +17,14 @@ logger = logging.getLogger(__name__)
 
 CDRDAO = 'cdrdao'
 
+_TRACK_RE = "^Analyzing track (?P<track>[0-9]*) \(AUDIO\): start (?P<start>[0-9]*:[0-9]*:[0-9]*), length (?P<length>[0-9]*:[0-9]*:[0-9]*)"
+_CRC_RE = "Found (?P<errors>[0-9][0-9]) Q sub-channels with CRC errors"
+
+class ProgressParser:
+    def parse(self, line):
+       pass 
+        
+
 class ReadTOC_Task(task.Task):
     """
     Task that reads the TOC of the disc using cdrdao
@@ -86,7 +94,6 @@ class ReadTOC_Task(task.Task):
         # 0 does not give us output before we complete, 1.0 gives us output
         # too late
         self.schedule(0.01, self._read, runner)
-
 
     def _poll(self, runner):
 
