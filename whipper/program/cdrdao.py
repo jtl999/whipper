@@ -83,17 +83,11 @@ class ReadTOC_Task(task.Task):
 
     def start(self, runner):
         task.Task.start(self, runner)
-        cmd = [CDRDAO, 'read-toc'] + (['--fast-toc'] if fast_toc else []) + [
-            '--device', device, tocfile]
-
-        fast_toc = self.fast_toc
-        device = self.device
-
         os.close(self.fd)
         os.unlink(self.tocfile)
 
-        cmd = [CDRDAO, 'read-toc'] + (['--fast-toc'] if fast_toc else []) + [
-            '--device', device, self.tocfile]
+        cmd = [CDRDAO, 'read-toc'] + (['--fast-toc'] if self.fast_toc else []) + [
+            '--device', self.device, self.tocfile]
         
         self._popen = asyncsub.Popen(cmd,
                                      bufsize=bufsize,
@@ -145,6 +139,15 @@ class ReadTOC_Task(task.Task):
         self.setProgress(1.0)
         self.toc = TocFile(self.tocfile)
         self.toc.parse()
+        if self.toc_path is not None:
+            t_comp = os.path.abspath(self.toc_path).split(os.sep)
+            t_dirn = os.sep.join(t_comp[:-1])
+            # If the output path doesn't exist, make it recursively
+            if not os.path.isdir(t_dirn):
+                os.makedirs(t_dirn)
+            t_dst = truncate_filename(os.path.join(t_dirn, t_comp[-1] + '.toc'))
+            shutil.copy(self.tocfile, os.path.join(t_dirn, t_dst))
+        os.unlink(self.tocfile)
         self.stop()
         return
 
