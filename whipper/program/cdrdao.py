@@ -58,7 +58,7 @@ class ReadTOC_Task(task.Task):
     description = "Reading TOC"
     toc = None
     
-    def __init__(self, device, fast_toc=False):
+    def __init__(self, device, fast_toc=False, toc_path=None):
         """
         Read the TOC for 'device'.
         @device: path of device
@@ -69,6 +69,7 @@ class ReadTOC_Task(task.Task):
         
         self.device = device
         self.fast_toc = fast_toc
+        self.toc_path = toc_path
         self._buffer = ""  # accumulate characters
         self._parser = ProgressParser()
         self.fd, self.tocfile = tempfile.mkstemp(suffix=u'.cdrdao.read-toc.whipper.task')
@@ -140,6 +141,15 @@ class ReadTOC_Task(task.Task):
         self.setProgress(1.0)
         self.toc = TocFile(self.tocfile)
         self.toc.parse()
+        if self.toc_path is not None:
+            t_comp = os.path.abspath(self.toc_path).split(os.sep)
+            t_dirn = os.sep.join(t_comp[:-1])
+            # If the output path doesn't exist, make it recursively
+            if not os.path.isdir(t_dirn):
+                os.makedirs(t_dirn)
+                t_dst = truncate_filename(os.path.join(t_dirn, t_comp[-1] + '.toc'))
+                shutil.copy(tocfile, os.path.join(t_dirn, t_dst))
+                os.unlink(tocfile)
         self.stop()
         return
 

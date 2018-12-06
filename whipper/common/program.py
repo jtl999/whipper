@@ -121,6 +121,7 @@ class Program:
         
         t = cdrdao.ReadTOC_Task(device)
         t.description = "Reading table"
+        t.toc_path = out_path
         runner.run(t)
         itable = t.toc.table
         tdict[offset] = itable
