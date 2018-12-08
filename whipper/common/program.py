@@ -110,7 +110,7 @@ class Program:
         return toc
 
     def getTable(self, runner, cddbdiscid, mbdiscid, device, offset,
-                 out_path):
+                 toc_path):
         """
         Retrieve the Table from the drive.
 
@@ -121,7 +121,7 @@ class Program:
         
         t = cdrdao.ReadTOC_Task(device)
         t.description = "Reading table"
-        t.toc_path = out_path
+        t.toc_path = toc_path
         runner.run(t)
         itable = t.toc.table
         tdict[offset] = itable
