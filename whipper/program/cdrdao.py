@@ -126,6 +126,7 @@ class ReadTOC_Task(task.Task):
         # too late
         self.schedule(0.01, self._read, runner)
 
+
     def _poll(self, runner):
 
         sys.stdout.write("_poll\n")
