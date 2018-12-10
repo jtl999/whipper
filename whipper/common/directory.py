@@ -30,16 +30,6 @@ def config_path():
     return join(path, u'whipper.conf')
 
 
-def cache_path(name=None):
-    path = join(getenv('XDG_CACHE_HOME') or join(expanduser('~'), u'.cache'),
-                u'whipper')
-    if name:
-        path = join(path, name)
-    if not exists(path):
-        makedirs(path)
-    return path
-
-
 def data_path(name=None):
     path = join(getenv('XDG_DATA_HOME') or
                 join(expanduser('~'), u'.local/share'),
