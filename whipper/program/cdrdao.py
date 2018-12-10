@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 CDRDAO = 'cdrdao'
 
-class ReadTOCTask(task.Task):
+class ReadTOC_Task(task.Task):
     """
     Task that reads the TOC of the disc using cdrdao
     """
@@ -68,17 +68,8 @@ class ReadTOCTask(task.Task):
                     self._buffer = ""
 
                 for line in lines:
-                    self._parser.parse(line)
+                    sys.stdout.write("%s\n" % line)
 
-                # fail if too many errors
-                if self._parser.errors > self._MAXERROR:
-                    logger.debug('%d errors, terminating', self._parser.errors)
-                    self._popen.terminate()
-
-                num = self._parser.wrote - self._start + 1
-                den = self._stop - self._start + 1
-                assert den != 0, "stop %d should be >= start %d" % (
-                    self._stop, self._start)
                 progress = float(num) / float(den)
                 if progress < 1.0:
                     self.setProgress(progress)
@@ -99,38 +90,6 @@ class ReadTOCTask(task.Task):
     def _done(self):
         end_time = time.time()
         self.setProgress(1.0)
-
-        # check if the length matches
-        size = os.stat(self.path)[stat.ST_SIZE]
-        # wav header is 44 bytes
-        offsetLength = self._stop - self._start + 1
-        expected = offsetLength * common.BYTES_PER_FRAME + 44
-        if size != expected:
-            # FIXME: handle errors better
-            logger.warning('file size %d did not match expected size %d',
-                           size, expected)
-            if (size - expected) % common.BYTES_PER_FRAME == 0:
-                logger.warning('%d frames difference' % (
-                    (size - expected) / common.BYTES_PER_FRAME))
-            else:
-                logger.warning('non-integral amount of frames difference')
-
-            self.setAndRaiseException(FileSizeError(self.path,
-                                                    "File size %d did not "
-                                                    "match expected "
-                                                    "size %d" % (
-                                                        size, expected)))
-
-        if not self.exception and self._popen.returncode != 0:
-            if self._errors:
-                print("\n".join(self._errors))
-            else:
-                logger.warning('exit code %r', self._popen.returncode)
-                self.exception = ReturnCodeError(self._popen.returncode)
-
-        self.quality = self._parser.getTrackQuality()
-        self.duration = end_time - self._start_time
-        self.speed = (offsetLength / 75.0) / self.duration
 
         self.stop()
         return
