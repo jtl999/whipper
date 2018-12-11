@@ -1,3 +1,4 @@
+import sys
 import os
 import re
 import shutil
@@ -6,9 +7,10 @@ import subprocess
 import time
 from subprocess import Popen, PIPE
 
-from whipper.common.common import EjectError, truncate_filename
+from whipper.common.common import truncate_filename
 from whipper.image.toc import TocFile
 from whipper.extern.task import task
+from whipper.extern import asyncsub
 
 import logging
 logger = logging.getLogger(__name__)
