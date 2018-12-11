@@ -59,7 +59,7 @@ class ReadTOC_Task(task.Task):
             
             # parse buffer into lines if possible, and parse them
             if "\n" in self._buffer:
-                 lines = self._buffer.split('\n')
+                lines = self._buffer.split('\n')
                 if lines[-1] != "\n":
                     # last line didn't end yet
                     self._buffer = lines[-1]
