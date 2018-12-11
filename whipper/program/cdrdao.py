@@ -25,10 +25,11 @@ _LAST_TRACK_RE = re.compile(r"^(?P<track>[0-9]*)")
 _LEADOUT_RE = re.compile(
     r"^Leadout AUDIO\s*[0-9]\s*[0-9]*:[0-9]*:[0-9]*\([0-9]*\)")
 
+
 class ProgressParser:
     tracks = 0
     currentTrack = 0
-    oldline = '' # for leadout/final track number detection
+    oldline = ''  # for leadout/final track number detection
 
     def parse(self, line):
         cdrdao_m = _BEGIN_CDRDAO_RE.match(line)
@@ -46,7 +47,8 @@ class ProgressParser:
 
         track_s = _TRACK_RE.search(line)
         if track_s:
-            logger.debug("RE: Began reading track: %d" % int(track_s.group('track')))
+            logger.debug("RE: Began reading track: %d" 
+                    % int(track_s.group('track')))
             self.currentTrack = int(track_s.group('track'))
 
         crc_s = _CRC_RE.search(line)
@@ -98,6 +100,8 @@ class ReadTOC_Task(task.Task):
                                      stderr=subprocess.PIPE,
                                      close_fds=True)
         
+        self.schedule(0.01, self._read, runner)
+
     def _read(self, runner):
         ret = self._popen.recv_err()
         if not ret:
