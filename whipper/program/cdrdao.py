@@ -92,7 +92,7 @@ class ReadTOC_Task(task.Task):
             '--device', self.device, self.tocfile]
         
         self._popen = asyncsub.Popen(cmd,
-                                     bufsize=bufsize,
+                                     bufsize=1024,
                                      stdin=subprocess.PIPE,
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE,
