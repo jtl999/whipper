@@ -101,7 +101,7 @@ class Program:
                              'pre-gap length bug.\n'
                              'See http://sourceforge.net/tracker/?func=detail&aid=604751&group_id=2171&atid=102171\n')  # noqa: E501
 
-        t = cdrdao.ReadTOC_Task(device)
+        t = cdrdao.ReadTOCTask(device)
         runner.run(t)
         toc = t.toc.table
 
@@ -118,7 +118,7 @@ class Program:
         itable = None
         tdict = {}
 
-        t = cdrdao.ReadTOC_Task(device)
+        t = cdrdao.ReadTOCTask(device)
         t.description = "Reading table"
         t.toc_path = toc_path
         runner.run(t)

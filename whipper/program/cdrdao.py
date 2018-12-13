@@ -58,7 +58,7 @@ class ProgressParser:
         self.oldline = line
 
 
-class ReadTOC_Task(task.Task):
+class ReadTOCTask(task.Task):
     """
     Task that reads the TOC of the disc using cdrdao
     """
