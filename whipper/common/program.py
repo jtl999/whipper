@@ -64,6 +64,10 @@ class Program:
         @param record: whether to record results of API calls for playback.
         """
         self._record = record
+<<<<<<< HEAD
+=======
+        self._stdout = stdout
+>>>>>>> drop-caching
         self._config = config
 
         d = {}
