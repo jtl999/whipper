@@ -94,7 +94,6 @@ class _CD(BaseCommand):
         utils.unmount_device(self.device)
 
         # first, read the normal TOC, which is fast
-        logger.info("reading TOC...")
         self.ittoc = self.program.getFastToc(self.runner, self.device)
 
         # already show us some info based on this
@@ -453,8 +452,6 @@ Log files will log the path to tracks relative to this directory.
                 self.itable.setFile(number, 1, trackResult.filename,
                                     self.ittoc.getTrackLength(number), number)
 
-            self.program.saveRipResult()
-
         # check for hidden track one audio
         htoa = self.program.getHTOA()
         if htoa:
@@ -485,8 +482,6 @@ Log files will log the path to tracks relative to this directory.
             logger.warning('AccurateRip entry not found')
 
         accurip.print_report(self.program.result)
-
-        self.program.saveRipResult()
 
         self.program.writeLog(discName, self.logger)
 
